@@ -1,0 +1,103 @@
+{{/* ==========================================================================
+  layouts/shortcodes/img.html
+  ==========================================================================
+  Shortcode to display an image, prioritizing Hugo's image processing
+  if the image is a Page Resource (part of a Page Bundle).
+
+  Parameters:
+    src       (required) - Path to the image. If part of a Page Bundle,
+                           just the filename (e.g., "my-image.jpg").
+                           Otherwise, path relative to static (e.g., "/images/logo.png")
+                           or an absolute URL.
+    alt       (optional) - Alt text for the image. Defaults to page title.
+    caption   (optional) - Image caption (Markdown supported).
+    class     (optional) - Additional CSS class(es) for the <figure> element.
+    title     (optional) - Title attribute for the <img> element.
+    width     (optional) - Manual width attribute (mainly for static/external images).
+    height    (optional) - Manual height attribute (mainly for static/external images).
+ ========================================================================== */}}
+
+{{/* -- Get the image path from the 'src' parameter -- */}}
+{{ $src := .Get "src" | default "" }}
+{{ if not $src }}
+{{ errorf "Shortcode 'img' in file '%s' is missing the required 'src' parameter." $.Page.File.Path }}
+{{ return }}
+{{ end }}
+
+{{/* -- Attempt to find the image as a Page Resource -- */}}
+{{ $img := "" }}
+{{ if $.Page.Resources }} {{/* Ensure the page has resources available */}}
+{{ $img = $.Page.Resources.GetMatch $src }}
+{{ end }}
+
+<figure class="image-figure {{ with .Get "class" }}{{ . }}{{ end }}">
+{{ if $img }}
+  {{/* -- Image found as Page Resource: Process it -- */}}
+  {{/* -- Define image sizes for processing -- */}}
+  {{ $smallWidth := 600 }}
+  {{ $mediumWidth := 900 }}
+  {{ $largeWidth := 1200 }}
+  {{ $contentWidth := 720 }} {{/* Get this from CSS variable or set manually */}}
+
+  {{/* -- Resize images, handling potential errors (though unlikely with GetMatch) -- */}}
+  {{ $small := $img.Resize (printf "%dx" $smallWidth) }}
+  {{ $medium := $img.Resize (printf "%dx" $mediumWidth) }}
+
+  {{/* -- Use original if smaller than the large preset, otherwise resize -- */}}
+  {{ $large := $img }}
+  {{ if ge $img.Width $largeWidth }}
+    {{ $large = $img.Resize (printf "%dx" $largeWidth) }}
+  {{ end }}
+
+  {{/* -- Generate srcset attribute -- */}}
+  {{ $srcSet := slice }}
+  {{ $srcSet = $srcSet | append (printf "%s %dw" $small.RelPermalink $smallWidth) }}
+  {{ $srcSet = $srcSet | append (printf "%s %dw" $medium.RelPermalink $mediumWidth) }}
+  {{/* -- Only add large size if it's different from medium or original -- */}}
+  {{ if ne $large.RelPermalink $medium.RelPermalink }}
+      {{ $srcSet = $srcSet | append (printf "%s %dw" $large.RelPermalink $large.Width) }}
+  {{ end }}
+  {{/* -- Consider adding original if significantly larger and distinct */}}
+  {{/* if and (gt $img.Width $largeWidth) (ne $img.RelPermalink $large.RelPermalink) }}
+      {{ $srcSet = $srcSet | append (printf "%s %dw" $img.RelPermalink $img.Width) }}
+  {{ end */}}
+  {{ $srcSet = delimit $srcSet ", " }}
+
+  {{/* -- Generate sizes attribute (adjust based on your layout) -- */}}
+  {{ $sizes := printf "(max-width: %dpx) 90vw, %dpx" $contentWidth $contentWidth }}
+
+  <img
+    srcset="{{ $srcSet }}"
+    sizes="{{ $sizes }}"
+    src="{{ $medium.RelPermalink }}" {{/* Use medium size as default src */}}
+    alt="{{ .Get "alt" | default $.Page.Title }}"
+    loading="lazy"
+    width="{{ $img.Width }}" {{/* Original width */}}
+    height="{{ $img.Height }}" {{/* Original height */}}
+    {{ with .Get "title" }}title="{{ . }}"{{ end }}
+  >
+{{ else }}
+  {{/* -- Image NOT found as Page Resource: Display as static/external URL -- */}}
+  {{ $isExternal := urls.Parse $src }}
+
+  {{/* -- Warn during build if it looks like a local path but wasn't found as a resource -- */}}
+  {{ if not $isExternal.Scheme }}
+    {{ if not (strings.HasPrefix $src "/") }}
+      {{ warnf "تنبيه في '%s': الصورة '%s' لم توجد كـ Page Resource. تأكد من المسار أو ضع الصورة في نفس مجلد المقال (Page Bundle)." $.Page.File.Path $src }}
+    {{ end }}
+  {{ end }}
+
+  <img
+    src="{{ $src | relURL }}" {{/* Use relURL for static paths, keeps external URLs as is */}}
+    alt="{{ .Get "alt" | default $.Page.Title }}"
+    loading="lazy"
+    {{ with .Get "width" }}width="{{ . }}"{{ end }}
+    {{ with .Get "height" }}height="{{ . }}"{{ end }}
+    {{ with .Get "title" }}title="{{ . }}"{{ end }}
+  >
+{{ end }}
+
+{{ with .Get "caption" }}
+  <figcaption>{{ . | $.Page.RenderString | safeHTML }}</figcaption> {{/* Render Markdown in caption */}}
+{{ end }}
+</figure>

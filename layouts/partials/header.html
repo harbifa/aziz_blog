@@ -1,0 +1,70 @@
+<header class="site-header">
+    <div class="container">
+        <div class="header-wrapper">
+            <div class="site-branding">
+                <a href="{{ site.BaseURL | relLangURL }}" class="site-title">
+                    {{ with site.Params.logo }}
+                        {{ $logoPath := . }}
+                        {{ $logoResource := resources.Get $logoPath }}
+                        {{ if $logoResource }}
+                            {{/* --- تضمين SVG مباشرة --- */}}
+                            <span class="brand-logo-inline"> {{/* استخدم span أو div كحاوية */}}
+                                {{ $logoResource.Content | safeHTML }}
+                            </span>
+                        {{ else }}
+                             <!-- Fallback -->
+                             <span class="brand-icon"><i class="fa-solid fa-feather-pointed"></i></span>
+                             {{ warnf "Logo specified in config (%s) but not found in assets." $logoPath }}
+                        {{ end }}
+                    {{ else }}
+                         <!-- Fallback -->
+                         <span class="brand-icon"><i class="fa-solid fa-feather-pointed"></i></span>
+                    {{ end }}
+                    <span class="brand-text">{{ site.Title }}</span>
+                </a>
+            </div>
+
+            <nav class="main-navigation">
+                {{/* --- زر تبديل القائمة للشاشات الصغيرة --- */}}
+                <button class="menu-toggle" aria-label="القائمة الرئيسية" aria-expanded="false">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                {{/* --- حاوية القائمة (للتجاوب) --- */}}
+                <div class="menu-container">
+                    <ul class="menu">
+                        {{ $currentPage := . }} {{/* حفظ سياق الصفحة الحالية */}}
+
+                        {{/* --- 1. عرض عناصر القائمة الثابتة من config.toml --- */}}
+                        {{ range .Site.Menus.main.ByWeight }} {{/* الترتيب حسب weight */}}
+                        <li class="menu-item {{ if or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}active{{ end }}">
+                          <a href="{{ .URL | relLangURL }}">{{ .Name }}</a>
+                        </li>
+                        {{ end }} {{/* --- نهاية عناصر القائمة الثابتة --- */}}
+
+
+                        {{/* --- 2. عرض التصنيفات ديناميكياً --- */}}
+                        {{ $categories := site.Taxonomies.categories }} {{/* الحصول على التصنيفات */}}
+
+                        {{/* --- يمكنك تغيير طريقة الترتيب هنا --- */}}
+                        {{ range $categories.ByCount.Reverse }} {{/* مثال: الأكثر استخداماً أولاً */}}
+                            {{ $categoryPage := .Page }} {{/* الحصول على صفحة التصنيف */}}
+                            {{ if $categoryPage }} {{/* التأكد من وجود صفحة */}}
+                              {{ $publishedPages := where $categoryPage.Pages "Params.draft" "ne" true }} {{/* فلترة المقالات المنشورة */}}
+                              {{ if ge (len $publishedPages) 1 }} {{/* اعرض فقط إذا كان هناك مقال منشور واحد على الأقل */}}
+                                <li class="menu-item menu-item-category {{ if eq $currentPage.RelPermalink $categoryPage.RelPermalink }}active{{ end }}">
+                                  <a href="{{ $categoryPage.RelPermalink }}">{{ $categoryPage.Title }}</a>
+                                   {{/* --- يمكنك إلغاء التعليق لعرض عدد المقالات --- */}}
+                                   {{/* <span class="category-count">({{ len $publishedPages }})</span> */}}
+                                </li>
+                              {{ end }} {{/* --- نهاية if ge (len $publishedPages) 1 --- */}}
+                            {{ end }} {{/* --- نهاية if $categoryPage --- */}}
+                        {{ end }} {{/* --- نهاية range $categories --- */}}
+                        {{/* --- نهاية إضافة التصنيفات --- */}}
+
+                      </ul> {{/* --- نهاية ul.menu --- */}}
+                </div> {{/* --- نهاية div.menu-container --- */}}
+            </nav> {{/* --- نهاية nav.main-navigation --- */}}
+        </div> {{/* --- نهاية div.header-wrapper --- */}}
+    </div> {{/* --- نهاية div.container --- */}}
+</header>

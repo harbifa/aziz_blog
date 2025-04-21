@@ -1,0 +1,95 @@
+{{/* layouts/partials/seo/schema.html */}}
+{{/* Generates JSON-LD structured data */}}
+
+{{ $isArticle := or (eq .Section "posts") (eq .Type "posts") }}
+{{ $isPage := and (not .IsHome) (not $isArticle) (eq .Kind "page") }}
+
+{{ if .IsHome }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": {{ site.Title | jsonify }},
+    "url": {{ site.BaseURL | absLangURL | jsonify }},
+    {{ with site.Params.description }}
+    "description": {{ . | jsonify }},
+    {{ end }}
+    "publisher": {
+        "@type": "Organization",
+        "name": {{ site.Title | jsonify }}
+        {{ with site.Params.logo -}}
+        ,
+        "logo": {
+            "@type": "ImageObject",
+            "url": "{{ . | absURL }}"
+            {{- $logoResource := resources.Get . -}}
+            {{- if and $logoResource (ne $logoResource.MediaType.SubType "svg") -}}
+            ,"width": {{ $logoResource.Width }},
+            "height": {{ $logoResource.Height }}
+            {{- end -}}
+        }
+        {{- end }}
+    }
+}
+</script>
+{{ else if or $isArticle $isPage }}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "{{ if $isArticle }}BlogPosting{{ else }}Article{{ end }}",
+    "headline": {{ .Title | jsonify }},
+    "url": {{ .Permalink | absLangURL | jsonify }},
+    {{ with .Params.featured_image }}
+        {{ $imagePath := . }}
+        {{ with $.Resources.GetMatch $imagePath }}
+            {{ $isSvg := eq .MediaType.SubType "svg" }}
+            "image": {
+                "@type": "ImageObject",
+                "url": "{{ .Permalink | absLangURL }}"
+                {{- if not $isSvg -}}
+                ,
+                {{ $imgProc := .Fill "1200x630" }}
+                "width": {{ $imgProc.Width }},
+                "height": {{ $imgProc.Height }}
+                {{- end -}}
+            },
+        {{ else }}
+             "image": {
+                 "@type": "ImageObject",
+                 "url": "{{ $imagePath | absURL }}"
+             },
+        {{ end }}
+    {{ end }}
+    "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+    "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
+    "author": {
+        "@type": "Person",
+        "name": {{ site.Params.author | default "Admin" | jsonify }}
+    },
+    "publisher": {
+         "@type": "Organization",
+         "name": {{ site.Title | jsonify }}
+         {{ with site.Params.logo -}}
+         ,
+         "logo": {
+            "@type": "ImageObject",
+            "url": "{{ . | absURL }}"
+            {{- $logoResource := resources.Get . -}}
+            {{- if and $logoResource (ne $logoResource.MediaType.SubType "svg") -}}
+            ,"width": {{ $logoResource.Width }},
+            "height": {{ $logoResource.Height }}
+            {{- end -}}
+         }
+         {{- end }}
+    },
+    {{ $desc := .Description | default .Summary | plainify }}
+    {{ with $desc }}
+    "description": {{ . | jsonify }},
+    {{ end }}
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ site.BaseURL | absLangURL }}"
+    }
+}
+</script>
+{{ end }}

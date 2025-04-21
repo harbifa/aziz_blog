@@ -1,0 +1,94 @@
+{{ define "main" }}
+<div class="home-container">
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">مرحباً بك في {{ .Site.Title }}</h1>
+            <p class="hero-description">{{ .Site.Params.description }}</p>
+            <div class="hero-cta">
+                <a href="/posts/" class="cta-button">استكشف المقالات <i class="fa-solid fa-arrow-left"></i></a>
+                <a href="https://twitter.com/fuufoo_22" target="_blank" rel="noopener noreferrer" class="cta-social">
+                    <i class="fa-brands fa-twitter"></i> تابعني على تويتر
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="latest-posts-section">
+        <div class="section-header">
+            <h2 class="section-title">أحدث المقالات</h2>
+            <a href="/posts/" class="section-link">عرض كل المقالات <i class="fa-solid fa-arrow-left"></i></a>
+        </div>
+
+        <div class="posts-featured-grid">
+            {{ range first 3 (where .Site.RegularPages "Section" "posts") }}
+            <article class="featured-post-card">
+                <a href="{{ .RelPermalink }}" class="featured-post-link">
+                    <div class="featured-post-image">
+                        {{ $page := . }} {{/* Store the current page context */}}
+                        {{ with .Params.featured_image }}
+                            {{ $imagePath := . }} {{/* Store the image filename */}}
+                            {{ $img := $page.Resources.GetMatch $imagePath }} {{/* Use the stored page context */}}
+                            {{ if $img }}
+                                {{ $thumb := $img.Fill "400x200 Lanczos" }}
+                                <img src="{{ $thumb.RelPermalink }}" alt="{{ $page.Title }}" class="featured-image" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}">
+                            {{ else }}
+                                <div class="featured-image-placeholder">
+                                    <i class="fa-solid fa-newspaper"></i>
+                                    {{/* Optional debug: output path/context */}}
+                                    <!-- Img Path: {{ $imagePath }} | Page: {{ $page.File.Path }} -->
+                                </div>
+                            {{ end }}
+                        {{ else }}
+                            <div class="featured-image-placeholder">
+                                <i class="fa-solid fa-newspaper"></i>
+                            </div>
+                        {{ end }}
+                    </div>
+                    
+                    <div class="featured-post-content">
+                        <header class="featured-post-header">
+                            <div class="featured-post-meta">
+                                <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" class="featured-post-date">
+                                    <i class="fa-regular fa-calendar"></i> {{ .Date.Format "2 Jan 2006" }}
+                                </time>
+                            </div>
+                            <h3 class="featured-post-title">{{ .Title }}</h3>
+                        </header>
+                        
+                        <div class="featured-post-excerpt">
+                            {{ with .Description }}
+                                {{ . }}
+                            {{ else }}
+                                {{ .Summary | truncate 120 }}
+                            {{ end }}
+                        </div>
+                        
+                        <div class="featured-post-footer">
+                            <span class="read-more">اقرأ المزيد <i class="fa-solid fa-arrow-left"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </article>
+            {{ end }}
+        </div>
+    </section>
+
+    <section class="about-section">
+        <div class="about-content">
+            <div class="about-header">
+                <div class="about-avatar">
+                    <i class="fa-solid fa-user-circle avatar-placeholder"></i>
+                </div>
+                <h2 class="about-title">عن المدونة</h2>
+            </div>
+            <div class="about-description">
+                <p>هذه المدونة هي امتداد لمحتواي على تويتر، حيث أشارك مقالات أعمق وأكثر تفصيلاً في مجالات التسويق والنمو الشخصي.</p>
+                <p>أهدف إلى تقديم محتوى قيّم يساعدك على التطور والنمو. تابعني على تويتر <a href="https://twitter.com/fuufoo_22" target="_blank">@fuufoo_22</a> للبقاء على اطلاع بأحدث المقالات والمحتوى.</p>
+            </div>
+            <div class="about-cta">
+                <a href="/about/" class="about-link">اقرأ المزيد عني <i class="fa-solid fa-arrow-left"></i></a>
+            </div>
+        </div>
+    </section>
+</div>
+{{ end }}

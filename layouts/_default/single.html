@@ -1,0 +1,91 @@
+{{ define "main" }}
+<article class="blog-post">
+    <header class="post-header">
+        <div class="post-meta">
+            <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" class="post-date">
+                <i class="fa-regular fa-calendar"></i> {{ .Date.Format "2 Jan 2006" }}
+            </time>
+            {{ with .Params.categories }}
+            <div class="post-categories">
+                <i class="fa-solid fa-folder"></i>
+                {{ range . }}
+                <a href="{{ "/categories/" | relLangURL }}{{ . | urlize }}" class="category-link">{{ . }}</a>
+                {{ end }}
+            </div>
+            {{ end }}
+        </div>
+        <h1 class="post-title">{{ .Title }}</h1>
+        {{ with .Description }}
+        <div class="post-description">
+            {{ . }}
+        </div>
+        {{ end }}
+    </header>
+
+    <div class="post-featured-image">
+        {{ with .Params.featured_image }}
+        <img src="{{ . }}" alt="{{ $.Title }}" class="featured-image">
+        {{ end }}
+    </div>
+
+    <div class="post-content">
+        {{ .Content }}
+    </div>
+
+    <footer class="post-footer">
+        {{ with .Params.tags }}
+        <div class="post-tags">
+            <i class="fa-solid fa-tags"></i>
+            {{ range . }}
+            <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}" class="tag-link">#{{ . }}</a>
+            {{ end }}
+        </div>
+        {{ end }}
+
+        <div class="post-share">
+            <span class="share-title">مشاركة المقال:</span>
+            <a href="https://twitter.com/intent/tweet?text={{ .Title }}&url={{ .Permalink }}" target="_blank" rel="noopener noreferrer" class="share-link twitter">
+                <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ .Permalink }}" target="_blank" rel="noopener noreferrer" class="share-link facebook">
+                <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ .Permalink }}&title={{ .Title }}" target="_blank" rel="noopener noreferrer" class="share-link linkedin">
+                <i class="fa-brands fa-linkedin-in"></i>
+            </a>
+        </div>
+    </footer>
+
+    <div class="author-bio">
+        <div class="author-avatar">
+            <i class="fa-solid fa-user-circle avatar-placeholder"></i>
+        </div>
+        <div class="author-details">
+            <h4 class="author-name">{{ .Site.Params.author }}</h4>
+            <p class="author-description">مهتم بالتسويق والنمو الشخصي ومشاركة المعرفة. تابعني على تويتر <a href="https://twitter.com/fuufoo_22" target="_blank">@fuufoo_22</a></p>
+        </div>
+    </div>
+
+    <div class="post-navigation">
+        <div class="post-navigation-links">
+            {{ with .PrevInSection }}
+            <div class="nav-previous">
+                <a href="{{ .RelPermalink }}" class="nav-link">
+                    <span class="nav-direction"><i class="fa-solid fa-arrow-right"></i> المقال السابق</span>
+                    <span class="nav-title">{{ .Title }}</span>
+                </a>
+            </div>
+            {{ end }}
+
+            {{ with .NextInSection }}
+            <div class="nav-next">
+                <a href="{{ .RelPermalink }}" class="nav-link">
+                    <span class="nav-direction">المقال التالي <i class="fa-solid fa-arrow-left"></i></span>
+                    <span class="nav-title">{{ .Title }}</span>
+                </a>
+            </div>
+            {{ end }}
+        </div>
+    </div>
+</article>
+{{ end }}

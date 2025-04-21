@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="{{ if .IsHome }}{{ site.Params.description }}{{ else }}{{ .Description }}{{ end }}"
+    />
+    <title>
+      {{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} | {{ site.Title
+      }}{{ end }}
+    </title>
+
+    <!-- الخطوط من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- ملف CSS الرئيسي -->
+    {{ $style := resources.Get "css/main.css" | resources.Minify |
+    resources.Fingerprint }}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}" />
+
+    <!-- متابعة الترميز الثابت للـ SEO -->
+    {{ partial "seo/schema.html" . }}
+  </head>
+  <body>
+    <div class="site-container">
+      <!-- رأس الصفحة -->
+      {{ partial "header.html" . }}
+
+      <!-- محتوى الصفحة الرئيسي -->
+      <main class="site-content">
+        <div class="container">{{ block "main" . }}{{ end }}</div>
+      </main>
+      <!-- شريط التنقل -->
+      {{ partial "footer.html" . }}
+    </div>
+
+    
+    <!-- أضف هذا قبل نهاية وسم body -->
+    <script src="/js/image-zoom.js"></script>
+  </body>
+</html>

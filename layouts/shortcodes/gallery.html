@@ -1,0 +1,23 @@
+<!-- layouts/shortcodes/gallery.html -->
+<div class="image-gallery">
+  {{ range $index, $imagePath := .Params }}
+    <div class="gallery-item">
+      {{ $altText := printf "صورة معرض %d" (add $index 1) }}
+      {{/* -- محاولة إيجاد الصورة كـ Resource -- */}}
+      {{ $img := "" }}
+      {{ if $.Page.Resources }}
+        {{ $img = $.Page.Resources.GetMatch $imagePath }}
+      {{ end }}
+
+      {{ if $img }}
+        {{/* -- الصورة Resource: قم بتصغيرها للمعرض -- */}}
+        {{ $thumb := $img.Fill "300x200 Lanczos" }} {{/* حجم أصغر مناسب للمعرض */}}
+        <img src="{{ $thumb.RelPermalink }}" alt="{{ $altText }}" loading="lazy" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}">
+      {{ else }}
+        {{/* -- الصورة ليست Resource: اعرضها مباشرة -- */}}
+        <img src="{{ $imagePath | relURL }}" alt="{{ $altText }}" loading="lazy">
+        {{ warnf "تنبيه في '%s': صورة المعرض '%s' لم توجد كـ Page Resource." $.Page.File.Path $imagePath }}
+      {{ end }}
+    </div>
+  {{ end }}
+</div>

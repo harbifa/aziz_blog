@@ -1,0 +1,38 @@
+baseURL = "https://fuufoo-blog.netlify.app/"
+defaultContentLanguage = "ar"
+languageCode = "ar-sa"
+title = "مدونة عزيز"
+theme = ""
+
+# --- إعدادات الترقيم الجديدة ---
+[pagination]
+  pagerSize = 6 # عدد العناصر في كل صفحة
+
+# --- بقية الإعدادات ---
+[params]
+  description = "مدونة شخصية تقدم محتوى قيم ومفيد في مجال التسويق والنمو الشخصي"
+  author = "Fuad Abdulaziz"
+  logo = "images/logo-feather.svg"
+
+[languages]
+  [languages.ar]
+    languageName = "العربية"
+    weight = 1
+    rtl = true
+
+[permalinks]
+  posts = "/:year/:month/:title/"
+
+[menu]
+  [[menu.main]]
+    name = "الرئيسية"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    name = "المقالات"
+    url = "/posts/"
+    weight = 2
+  [[menu.main]]
+    name = "عني"
+    url = "/about/"
+    weight = 3

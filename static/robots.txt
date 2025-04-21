@@ -1,0 +1,8 @@
+# إخبار جميع روبوتات محركات البحث (User-agent: *)
+# بأنهم مسموح لهم بالوصول إلى كل شيء في الموقع (Allow: /)
+User-agent: *
+Allow: /
+
+# تحديد موقع ملف خريطة الموقع (Sitemap)
+# استبدل الرابط بعنوان موقعك الفعلي بعد النشر
+Sitemap: https://fuufoo-blog.netlify.app/sitemap.xml

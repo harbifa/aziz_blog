@@ -1,0 +1,111 @@
+{{ define "main" }}
+<div class="blog-list-container">
+
+    <header class="page-header">
+        <h1 class="page-title">
+            {{ if eq .Kind "taxonomy" }}
+                {{/* -- عرض نوع التصنيف (Category/Tag) + الاسم -- */}}
+                {{ $taxonomyType := "" }}
+                {{ if eq .Data.Singular "category" }}
+                    {{ $taxonomyType = "تصنيف" }}
+                {{ else if eq .Data.Singular "tag" }}
+                    {{ $taxonomyType = "وسم" }}
+                {{ else }}
+                    {{ $taxonomyType = .Data.Singular | title }}
+                {{ end }}
+                {{ $taxonomyType }}: {{ .Title }}
+            {{ else if eq .Type "posts" }}
+                 المقالات
+            {{ else }}
+                {{ .Title }}
+            {{ end }}
+        </h1>
+
+        {{ with .Description }}
+            <div class="page-description">
+                {{ . }}
+            </div>
+        {{ end }}
+
+        {{ if eq .Kind "taxonomy" }}
+            <div class="page-meta" style="margin-top: var(--spacing-sm); color: var(--color-text-light); font-size: var(--font-size-sm);">
+                {{ $count := len .Pages }}
+                {{ $articleWord := "مقالات" }}
+                {{ if eq $count 1 }}
+                    {{ $articleWord = "مقال" }}
+                {{ else if eq $count 2 }}
+                     {{ $articleWord = "مقالان" }}
+                {{ else if and (ge $count 3) (le $count 10) }}
+                     {{ $articleWord = "مقالات" }}
+                {{ else }}
+                     {{ $articleWord = "مقالاً" }}
+                {{ end }}
+                 {{ $count }} {{ $articleWord }}
+            </div>
+        {{ end }}
+    </header> {{/* <-- إغلاق وسم header هنا */}}
+
+
+    <div class="posts-grid">
+        {{ range .Pages }} {{/* --- بداية حلقة المقالات --- */}}
+            <article class="post-card">
+                <a href="{{ .RelPermalink }}" class="post-card-link">
+
+                    {{/* --- قسم عرض الصورة المميزة للبطاقة --- */}}
+                    <div class="post-card-image"> {{/* غيرت الكلاس ليتطابق مع CSS */}}
+                        {{ $page := . }}
+                        {{ with .Params.featured_image }}
+                            {{ $imagePath := . }}
+                            {{ $img := $page.Resources.GetMatch $imagePath }}
+                            {{ if $img }}
+                                {{/* --- تغيير الحجم للبطاقة --- */}}
+                                {{ $thumb := $img.Fill "400x200 Lanczos" }}
+                                <img src="{{ $thumb.RelPermalink }}" alt="{{ $page.Title }}" class="card-image" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}">
+                            {{ else }}
+                                 <div class="card-image-placeholder">
+                                     <i class="fa-solid fa-newspaper"></i>
+                                     <!-- Img Path: {{ $imagePath }} | Page: {{ $page.File.Path }} -->
+                                 </div>
+                            {{ end }} {{/* --- نهاية if $img --- */}}
+                        {{ else }}
+                            <div class="card-image-placeholder">
+                                <i class="fa-solid fa-newspaper"></i>
+                            </div>
+                        {{ end }} {{/* --- نهاية with featured_image --- */}}
+                    </div> {{/* --- نهاية div.post-card-image --- */}}
+
+
+                    {{/* --- قسم محتوى البطاقة --- */}}
+                    <div class="post-card-content">
+                        <header class="post-card-header">
+                            <div class="post-card-meta">
+                                <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" class="post-card-date">
+                                    <i class="fa-regular fa-calendar"></i> {{ .Date.Format "2 Jan 2006" }}
+                                </time>
+                            </div>
+                            <h2 class="post-card-title">{{ .Title }}</h2>
+                        </header>
+
+                        <div class="post-card-excerpt">
+                            {{ with .Description }}
+                                {{ . }}
+                            {{ else }}
+                                {{ .Summary | truncate 120 }}
+                            {{ end }} {{/* --- نهاية with Description --- */}}
+                        </div>
+
+                        <div class="post-card-footer">
+                            <span class="read-more">اقرأ المزيد <i class="fa-solid fa-arrow-left"></i></span>
+                        </div>
+                    </div> {{/* --- نهاية div.post-card-content --- */}}
+
+                </a>
+            </article>
+        {{ end }} {{/* --- نهاية حلقة المقالات range .Pages --- */}}
+    </div> {{/* --- نهاية div.posts-grid --- */}}
+
+    {{/* --- عرض الترقيم --- */}}
+    {{ template "_internal/pagination.html" . }}
+
+</div> {{/* --- نهاية div.blog-list-container --- */}}
+{{ end }} {{/* --- نهاية define "main" --- */}}
