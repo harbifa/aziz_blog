@@ -2,7 +2,6 @@ baseURL = "https://fuufoo-blog.netlify.app/"
 defaultContentLanguage = "ar"
 languageCode = "ar-sa"
 title = "مدونة عزيز"
-theme = ""
 
 # --- إعدادات الترقيم الجديدة ---
 [pagination]
@@ -18,6 +17,7 @@ theme = ""
   [languages.ar]
     languageName = "العربية"
     weight = 1
+    [languages.ar.params]
     rtl = true
 
 [permalinks]
