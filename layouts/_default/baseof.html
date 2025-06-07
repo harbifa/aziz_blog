@@ -47,9 +47,17 @@
       {{ partial "footer.html" . }}
     </div>
 
-    <!-- اسكربت القائمة المنسدلة -->
-    <script src="/js/menu.js"></script>
-    <!-- أضف هذا قبل نهاية وسم body -->
-    <script src="/js/image-zoom.js"></script>
+    <!-- مكتبة البحث Fuse.js -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
+    {{/* --- معالجة واستدعاء ملفات JavaScript --- */}} {{ $menuJS :=
+    resources.Get "js/menu.js" | resources.Minify }}
+    <script src="{{ $menuJS.RelPermalink }}"></script>
+
+    {{ $searchJS := resources.Get "js/search.js" | resources.Minify }}
+    <script src="{{ $searchJS.RelPermalink }}"></script>
+
+    {{ $zoomJS := resources.Get "js/image-zoom.js" | resources.Minify }}
+    <script src="{{ $zoomJS.RelPermalink }}"></script>
   </body>
 </html>

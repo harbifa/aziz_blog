@@ -36,3 +36,15 @@ title = "مدونة عزيز"
     name = "عني"
     url = "/about/"
     weight = 3
+
+  # --- إعدادات البحث ---
+# 1. تعريف صيغة مخرجات جديدة اسمها "json"
+[outputFormats.json]
+  baseName = "index"
+  mediaType = "application/json"
+  isPlainText = true
+
+# 2. تحديد أنواع الصفحات التي نريد إنشاء مخرجات لها
+[outputs]
+  home = ["HTML", "JSON"] # للصفحة الرئيسية
+  section = ["HTML", "RSS"] # للأقسام (مثل /posts/)
