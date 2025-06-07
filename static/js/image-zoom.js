@@ -13,3 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     });
   });
+
+  // اسكربت لتفعيل القائمة على الشاشات الصغيرة 
+// الكود الموجود في baseof.html
+document.addEventListener('DOMContentLoaded', function () {
+  const menuToggle = document.querySelector('.menu-toggle');
+  const menuContainer = document.querySelector('.menu-container');
+
+  // تأكد من أن هذه الأسطر صحيحة
+  menuToggle.addEventListener('click', function () {
+    menuContainer.classList.toggle('active');
+    menuToggle.classList.toggle('active'); // هذا السطر قد يكون غير ضروري أو يسبب سلوكاً غير متوقع
+  });
+});

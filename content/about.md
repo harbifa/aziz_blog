@@ -33,7 +33,7 @@ draft: false
 
 أتشرف بتواصلك معي من خلال:
 
-* تويتر: [@fuufoo_22](https://twitter.com/fuufoo_22)
-* البريد الإلكتروني: hello@fuufoo.com
+* تويتر: [@fuad3ziz](https://x.com/fuad3ziz)
+* البريد الإلكتروني: fuadaziz@shawamek.com
 
 شكراً لزيارتك مدونتي، وأتمنى أن تجد فيها ما يفيدك ويلهمك!
